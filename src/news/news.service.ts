@@ -1,12 +1,6 @@
 import { Injectable } from '@nestjs/common';
-
-export interface News {
-  id: number;
-  title: string;
-  description: string;
-  author: string;
-  countView: number;
-}
+import { News } from './dto/create-news.dto';
+import { UpdatedNews } from './dto/update-news.dto';
 
 const news1: News = {
   id: 1,
@@ -32,7 +26,7 @@ export class NewsService {
     return this.news.push(news);
   }
 
-  edit(id: News['id'], news: News): News | null {
+  update(id: News['id'], updatedNews: UpdatedNews): News | null {
     const idx = this.findIndex(id);
     if (idx === -1) {
       return null;
@@ -40,10 +34,9 @@ export class NewsService {
     const editedNews = this.news[idx];
     const finalNews = {
       ...editedNews,
-      ...news
+      ...updatedNews
     };
-    this.news.splice(idx, 1);
-    this.news.push(finalNews);
+    this.news[idx] = finalNews;
     return finalNews;
   }
 
