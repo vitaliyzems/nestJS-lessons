@@ -22,8 +22,9 @@ export class NewsService {
     return this.news.find(news => news.id === id);
   }
 
-  create(news: News): number {
-    return this.news.push(news);
+  create(news: News): boolean {
+    this.news.push(news);
+    return true;
   }
 
   update(id: News['id'], updatedNews: UpdatedNews): News | null {
