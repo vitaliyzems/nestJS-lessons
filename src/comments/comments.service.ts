@@ -1,45 +1,42 @@
 import { Injectable } from '@nestjs/common';
+import { getRandomInt } from 'src/utils/getRandomInt';
 import { Comment, Comments } from './dto/create-comment.dto';
-import { ReplyComment } from './dto/reply-comment.dto';
 import { UpdatedComment } from './dto/update-comment.dto';
-
-const replyComment1 = new ReplyComment(11, 'My reply #1', 'George');
-const replyComment2 = new ReplyComment(12, 'My reply #2', 'Max');
-const replyComment3 = new ReplyComment(13, 'My reply #3', 'Tom');
-
-const comment1 = new Comment(1, 'Like', 'Valentin', [replyComment1, replyComment2, replyComment3]);
-const comment2 = new Comment(2, 'NestJS', 'Vasiliy');
 
 @Injectable()
 export class CommentsService {
-  private readonly comments: Comments = {
-    1: [comment1, comment2]
-  };
+  private readonly comments: Comments = {};
 
-  create(newsId: number, comment: Comment, commentId?: number): Comment {
+  create(newsId: number, comment: Comment, commentId?: number): Comment | string {
     if (!this.comments[newsId]) {
       this.comments[newsId] = [];
     }
-    const comments = this.comments[newsId];
+    const id = getRandomInt(1, 100000);
+    const newComment = { id, ...comment };
+
     if (!commentId) {
-      const { id, author, message } = comment;
-      const newComment = new Comment(id, message, author);
-      comments.push(newComment);
+      this.comments[newsId].push(newComment);
       return newComment;
     }
-    const findedComment = this.findOne(newsId, commentId);
-    findedComment.reply.push(comment);
-    return comment;
+
+    const replyedComment = this.comments[newsId].find(comment => comment.id === commentId);
+
+    if (!replyedComment) {
+      return 'Комментарий не найден';
+    }
+
+    if (!replyedComment.reply) {
+      replyedComment.reply = [];
+    }
+
+    const replyId = getRandomInt(1, 100000);
+    const replyComment = { replyId, ...comment };
+    replyedComment.reply.push(replyComment);
+    return replyComment;
   }
 
   find(newsId: number): Comment[] | null {
     return this.comments[newsId] || null;
-  }
-
-  private findOne(newsId: number, id: number): Comment {
-    const comments = this.comments[newsId];
-    const comment = comments.find(comment => comment.id === id);
-    return comment;
   }
 
   update(newsId: number, id: number, updatedComment: UpdatedComment): string {

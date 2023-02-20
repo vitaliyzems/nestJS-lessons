@@ -1,17 +1,22 @@
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ReplyComment } from './reply-comment.dto';
 
 export class Comment {
-  id: number;
-  message: string;
-  author: string;
-  reply?: ReplyComment[];
+  public id?: number;
 
-  constructor(id: number, message: string, author: string, reply?: ReplyComment[]) {
-    this.id = id;
-    this.message = message;
-    this.author = author;
-    this.reply = reply ?? [];
-  }
+  @IsNotEmpty()
+  @IsString()
+  public message: string;
+
+  @IsNotEmpty()
+  @IsString()
+  public author: string;
+
+  @IsOptional()
+  @IsString()
+  public avatar: string;
+
+  public reply?: ReplyComment[];
 }
 
 export interface Comments {

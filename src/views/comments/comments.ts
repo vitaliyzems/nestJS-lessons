@@ -10,8 +10,13 @@ export function renderComments(comments: Comment[]): string {
 function renderCommentTemplate(comment: Comment): string {
   return `
     <div>
-      <h5 style="color: lightblue;">${comment.author}</h5>
-      <p style="font-size: 14px;">${comment.message}</p>
+      <div style="display: flex;">
+        <img src="${comment.avatar}" alt="..." style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 10px">
+        <div>
+          <h5 style="color: lightblue;">${comment.author}</h5>
+          <p style="font-size: 14px;">${comment.message}</p>
+        </div>
+      </div>
       ${renderCommentReplys(comment)}
       <hr>
     </div>
@@ -19,7 +24,7 @@ function renderCommentTemplate(comment: Comment): string {
 }
 
 function renderCommentReplys(comment: Comment): string {
-  if (comment.reply.length === 0) {
+  if (!comment.reply || comment.reply.length === 0) {
     return '';
   }
   let html = '';
@@ -31,9 +36,12 @@ function renderReplyComment(comment: ReplyComment) {
   return `
     <div style="display: flex;">
       <div style="display: flex; align-items: center; justify-content: center; font-size: 25px; padding: 0 20px;">&#10149;</div>
-      <div>
-        <h5 style="color: lightblue;">${comment.author}</h5>
-        <p style="font-size: 14px;">${comment.message}</p>
+      <div style="display: flex;">
+        <img src="${comment.avatar}" alt="..." style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover; margin-right: 10px">
+        <div>
+          <h5 style="color: lightblue;">${comment.author}</h5>
+          <p style="font-size: 14px;">${comment.message}</p>
+        </div>
       </div>
     </div>
   `;

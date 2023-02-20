@@ -1,8 +1,11 @@
-import { News } from 'src/news/dto/create-news.dto';
+import { AllNews, News } from 'src/news/dto/create-news.dto';
 
-export function renderAllNews(newsArr: News[]): string {
+export function renderAllNews(allNews: AllNews): string {
   let html = '';
-  newsArr.forEach(news => html += renredNewsBlock(news));
+  for (const idx in allNews) {
+    html += renredNewsBlock(allNews[idx]);
+  }
+  // newsArr.forEach(news => html += renredNewsBlock(news));
   return `
     <h1 style="padding: 10px 20px">Список новостей</h1>
     <div class="row" style="padding: 10px 20px">${html}</div>

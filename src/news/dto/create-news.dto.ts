@@ -1,19 +1,28 @@
 import { Comment } from '../../comments/dto/create-comment.dto';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class News {
-  id: number;
-  title: string;
-  description: string;
-  author: string;
-  comments: Comment[];
-  image?: string;
+  @IsOptional()
+  @IsNumber()
+  public id?: number;
 
-  constructor(id: number, title: string, description: string, author: string, image?: string) {
-    this.id = id;
-    this.title = title;
-    this.description = description;
-    this.author = author;
-    this.comments = [];
-    this.image = image;
-  };
+  @IsNotEmpty()
+  @IsString()
+  public title: string;
+
+  @IsNotEmpty()
+  @IsString()
+  public description: string;
+
+  @IsNotEmpty()
+  @IsString()
+  public author: string;
+
+  public comments: Comment[];
+
+  @IsOptional()
+  @IsString()
+  public image?: string;
 }
+
+export type AllNews = Record<number, News>;

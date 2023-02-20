@@ -1,56 +1,44 @@
 import { Injectable } from '@nestjs/common';
-import { News } from './dto/create-news.dto';
+import { getRandomInt } from 'src/utils/getRandomInt';
+import { AllNews, News } from './dto/create-news.dto';
 import { UpdatedNews } from './dto/update-news.dto';
-
-const picUrl = 'https://ps.w.org/google-news-editors-picks-news-feeds/assets/icon.svg?rev=1028085';
-
-const news1 = new News(1, 'Hello world', 'News from nest JS app', 'Vitaliy', picUrl);
-const news2 = new News(2, 'Hello nestJS', 'News from nest JS app', 'Viktor', picUrl);
-const news3 = new News(3, 'Learn JS', 'News from nest JS app', 'Jhon', picUrl);
 
 @Injectable()
 export class NewsService {
-  private readonly news: News[] = [news1, news2, news3];
+  private readonly news: AllNews = {};
 
-  getNews(): News[] {
+  getNews(): AllNews {
     return this.news;
   }
 
-  findOne(id: News['id']): News | null {
-    return this.news.find(news => news.id === id) || null;
+  findOne(id: number): News | null {
+    return this.news[id] || null;
   }
 
-  create(news: News): boolean {
-    const { id, title, description, author, image } = news;
-    const newNews = new News(id, title, description, author, image);
-    this.news.push(newNews);
-    return true;
-  }
-
-  update(id: News['id'], updatedNews: UpdatedNews): News | null {
-    const idx = this.findIndex(id);
-    if (idx === -1) {
-      return null;
-    }
-    const editedNews = this.news[idx];
-    const finalNews = {
-      ...editedNews,
-      ...updatedNews
-    };
-    this.news[idx] = finalNews;
+  create(news: News): News {
+    const id = getRandomInt(1, 100000);
+    const finalNews = { id, ...news };
+    this.news[id] = finalNews;
     return finalNews;
   }
 
-  remove(id: News['id']): boolean {
-    const idx = this.findIndex(id);
-    if (idx === -1) {
-      return false;
+  update(id: number, updatedNews: UpdatedNews): News | string {
+    if (!this.news[id]) {
+      return 'Новости с таким идентификатором не найдено';
     }
-    this.news.splice(idx, 1);
-    return true;
+    const news = {
+      ...this.news[id],
+      ...updatedNews
+    };
+    this.news[id] = news;
+    return this.news[id];
   }
 
-  private findIndex(id: number): number {
-    return this.news.findIndex(news => news.id === id);
+  remove(id: number): string {
+    if (!this.news[id]) {
+      return 'Новости с таким идентификатором не найдено';
+    }
+    delete this.news[id];
+    return 'Success';
   }
 }

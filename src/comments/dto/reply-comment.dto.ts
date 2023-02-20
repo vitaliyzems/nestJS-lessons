@@ -1,11 +1,17 @@
-export class ReplyComment {
-  id: number;
-  message: string;
-  author: string;
+import { IsOptional, IsString } from 'class-validator';
 
-  constructor(id: number, message: string, author: string) {
-    this.id = id;
-    this.message = message;
-    this.author = author;
-  }
+export class ReplyComment {
+  public id?: number;
+
+  @IsOptional()
+  @IsString()
+  public message: string;
+
+  @IsOptional()
+  @IsString()
+  public author: string;
+
+  @IsOptional()
+  @IsString()
+  public avatar: string;
 }

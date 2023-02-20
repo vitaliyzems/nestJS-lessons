@@ -1,7 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { HelperFileLoader } from 'src/utils/HelperFileLoader';
 import { CommentsService } from './comments.service';
 import { Comment } from './dto/create-comment.dto';
 import { UpdatedComment } from './dto/update-comment.dto';
+
+const COMMENTS_PATH = '/static/';
+const helperFileLoader = new HelperFileLoader();
+helperFileLoader.set(COMMENTS_PATH);
 
 @Controller('comments')
 export class CommentsController {
@@ -13,13 +20,35 @@ export class CommentsController {
   }
 
   @Post(':newsId')
-  create(@Param('newsId') newsId: string, @Body() comment: Comment): Comment {
-    return this.commentsService.create(Number(newsId), comment);
+  @UseInterceptors(FileInterceptor('avatar', {
+    storage: diskStorage({
+      destination: helperFileLoader.destinationPath,
+      filename: helperFileLoader.customFileName
+    })
+  }))
+  create(@Param('newsId') newsId: string, @Body() comment: Comment, @UploadedFile() image: Express.Multer.File): Comment | string {
+    if (!image) {
+      return this.commentsService.create(Number(newsId), comment);
+    }
+    const imagePath: string = COMMENTS_PATH + image.filename;
+    const newComment = { ...comment, avatar: imagePath };
+    return this.commentsService.create(Number(newsId), newComment);
   };
 
   @Post(':newsId/:id')
-  reply(@Param('newsId') newsId: string, @Body() comment: Comment, @Param('id') id: string) {
-    return this.commentsService.create(Number(newsId), comment, Number(id));
+  @UseInterceptors(FileInterceptor('avatar', {
+    storage: diskStorage({
+      destination: helperFileLoader.destinationPath,
+      filename: helperFileLoader.customFileName
+    })
+  }))
+  reply(@Param('newsId') newsId: string, @Body() comment: Comment, @Param('id') id: string, @UploadedFile() image: Express.Multer.File) {
+    if (!image) {
+      return this.commentsService.create(Number(newsId), comment, Number(id));
+    }
+    const imagePath: string = COMMENTS_PATH + image.filename;
+    const newComment = { ...comment, avatar: imagePath };
+    return this.commentsService.create(Number(newsId), newComment, Number(id));
   }
 
   @Patch(':newsId/:id')
