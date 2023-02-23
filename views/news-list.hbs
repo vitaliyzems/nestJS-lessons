@@ -1,0 +1,26 @@
+{{#if news}}
+  <div class="row">
+    <div style="position: relative;">
+      <h1>Список новостей</h1>
+      <a href="http://localhost:3000/news/views/create" style="position: absolute; top: 0; right: 0;">Добавить новость</a>
+    </div>
+    {{#each news}}
+    <div class="col-lg-4">
+      <div class="card mb-4">
+        <img src="http://localhost:3000{{this.image}}" class="card-img-top" style="height: 200px; object-fir: cover;" alt="...">
+        <div class="card-body">
+          <h5 class="card-title">{{this.title}}</h5>
+          <h6 class="card-subtitle mb-2 text-muted">Автор: {{this.author}}</h6>
+          <p class="card-text">{{this.description}}</p>
+          <a href="http://localhost:3000/news/views/{{this.id}}">Перейти</a>
+        </div>
+      </div>
+    </div>
+    {{/each}}
+  </div>
+{{else}}
+  <div style="position: relative;">
+    <h1>Список новостей пуст</h1>
+    <a href="http://localhost:3000/news/views/create" style="position: absolute; top: 0; right: 0;">Добавить новость</a>
+  </div>
+{{/if}}

@@ -1,56 +1,48 @@
 import { Injectable } from '@nestjs/common';
+import { getRandomInt } from 'src/utils/getRandomInt';
 import { News } from './dto/create-news.dto';
 import { UpdatedNews } from './dto/update-news.dto';
 
-const news1: News = {
-  id: 1,
-  title: 'Hello world',
-  description: 'News from nest JS app',
-  author: 'Vitaliy',
-  countView: 0
-};
-
 @Injectable()
 export class NewsService {
-  private readonly news: News[] = [news1];
+  private readonly news: News[] = [];
 
   getNews(): News[] {
     return this.news;
   }
 
-  findOne(id: News['id']): News | undefined {
-    return this.news.find(news => news.id === id);
+  findOne(id: number): News | null {
+    const news = this.news.find(news => news.id === id);
+    return news;
   }
 
-  create(news: News): boolean {
-    this.news.push(news);
-    return true;
+  create(news: News): News {
+    const id = getRandomInt(1, 100000);
+    const finalNews = { id, ...news };
+    this.news.unshift(finalNews);
+    return finalNews;
   }
 
-  update(id: News['id'], updatedNews: UpdatedNews): News | null {
-    const idx = this.findIndex(id);
-    if (idx === -1) {
-      return null;
+  update(id: number, updatedNews: UpdatedNews): News | string {
+    const news = this.news.find(news => news.id === id);
+    if (!news) {
+      return 'Новости с таким идентификатором не найдено';
     }
-    const editedNews = this.news[idx];
+    const idx = this.news.indexOf(news);
     const finalNews = {
-      ...editedNews,
+      ...news,
       ...updatedNews
     };
     this.news[idx] = finalNews;
     return finalNews;
   }
 
-  remove(id: News['id']): boolean {
-    const idx = this.findIndex(id);
-    if (idx === -1) {
-      return false;
+  remove(id: number): News[] | string {
+    const news = this.news.find(news => news.id === id);
+    if (!news) {
+      return 'Новости с таким идентификатором не найдено';
     }
-    this.news.splice(idx, 1);
-    return true;
-  }
-
-  private findIndex(id: number): number {
-    return this.news.findIndex(news => news.id === id);
+    const idx = this.news.indexOf(news);
+    return this.news.splice(idx, 1);
   }
 }
