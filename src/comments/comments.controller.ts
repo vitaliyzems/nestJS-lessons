@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Render, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { HelperFileLoader } from 'src/utils/HelperFileLoader';
@@ -13,6 +13,12 @@ helperFileLoader.set(COMMENTS_PATH);
 @Controller('comments')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) { }
+
+  @Get('views/create/:newsId')
+  @Render('comment-create')
+  getCreateView(@Param('newsId') newsId: string): { newsId: string; } {
+    return { newsId };
+  }
 
   @Get(':newsId')
   get(@Param('newsId') newsId: string): Comment[] {

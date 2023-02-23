@@ -24,5 +24,3 @@ export class News {
   @IsString()
   public image?: string;
 }
-
-export type AllNews = Record<number, News>;

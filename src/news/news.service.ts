@@ -1,44 +1,48 @@
 import { Injectable } from '@nestjs/common';
 import { getRandomInt } from 'src/utils/getRandomInt';
-import { AllNews, News } from './dto/create-news.dto';
+import { News } from './dto/create-news.dto';
 import { UpdatedNews } from './dto/update-news.dto';
 
 @Injectable()
 export class NewsService {
-  private readonly news: AllNews = {};
+  private readonly news: News[] = [];
 
-  getNews(): AllNews {
+  getNews(): News[] {
     return this.news;
   }
 
   findOne(id: number): News | null {
-    return this.news[id] || null;
+    const news = this.news.find(news => news.id === id);
+    return news;
   }
 
   create(news: News): News {
     const id = getRandomInt(1, 100000);
     const finalNews = { id, ...news };
-    this.news[id] = finalNews;
+    this.news.unshift(finalNews);
     return finalNews;
   }
 
   update(id: number, updatedNews: UpdatedNews): News | string {
-    if (!this.news[id]) {
+    const news = this.news.find(news => news.id === id);
+    if (!news) {
       return 'Новости с таким идентификатором не найдено';
     }
-    const news = {
-      ...this.news[id],
+    const idx = this.news.indexOf(news);
+    const finalNews = {
+      ...news,
       ...updatedNews
     };
-    this.news[id] = news;
-    return this.news[id];
+    this.news[idx] = finalNews;
+    return finalNews;
   }
 
-  remove(id: number): string {
-    if (!this.news[id]) {
+  remove(id: number): News[] | string {
+    const news = this.news.find(news => news.id === id);
+    if (!news) {
       return 'Новости с таким идентификатором не найдено';
     }
-    delete this.news[id];
-    return 'Success';
+    const idx = this.news.indexOf(news);
+    return this.news.splice(idx, 1);
   }
 }
