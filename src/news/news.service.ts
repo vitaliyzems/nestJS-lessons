@@ -1,56 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { News } from './dto/create-news.dto';
-import { UpdatedNews } from './dto/update-news.dto';
-
-const news1: News = {
-  id: 1,
-  title: 'Hello world',
-  description: 'News from nest JS app',
-  author: 'Vitaliy',
-  countView: 0
-};
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, UpdateResult } from 'typeorm';
+import { UpdateNewsDto } from './dto/update-news.dto';
+import { News } from './entities/news.entity';
 
 @Injectable()
 export class NewsService {
-  private readonly news: News[] = [news1];
+  constructor(@InjectRepository(News) private newsRepository: Repository<News>) { }
 
-  getNews(): News[] {
-    return this.news;
+  async create(news: News): Promise<News> {
+    return await this.newsRepository.save(news);
   }
 
-  findOne(id: News['id']): News | undefined {
-    return this.news.find(news => news.id === id);
+  async getAllNews(): Promise<News[]> {
+    return await this.newsRepository.find();
   }
 
-  create(news: News): boolean {
-    this.news.push(news);
-    return true;
+  async getAllNewsByUser(userId: number): Promise<News[]> {
+    return await this.newsRepository.findBy({ 'user': { id: userId } });
   }
 
-  update(id: News['id'], updatedNews: UpdatedNews): News | null {
-    const idx = this.findIndex(id);
-    if (idx === -1) {
-      return null;
-    }
-    const editedNews = this.news[idx];
-    const finalNews = {
-      ...editedNews,
-      ...updatedNews
-    };
-    this.news[idx] = finalNews;
-    return finalNews;
+  async getOneById(id: number): Promise<News> {
+    return await this.newsRepository.findOne({ where: { id }, relations: { 'user': true } });
   }
 
-  remove(id: News['id']): boolean {
-    const idx = this.findIndex(id);
-    if (idx === -1) {
-      return false;
-    }
-    this.news.splice(idx, 1);
-    return true;
+  async update(id: number, updateNewsDto: UpdateNewsDto): Promise<UpdateResult> {
+    return await this.newsRepository.update(id, updateNewsDto);
   }
 
-  private findIndex(id: number): number {
-    return this.news.findIndex(news => news.id === id);
+  async remove(news: News): Promise<News> {
+    return await this.newsRepository.remove(news);
   }
 }
