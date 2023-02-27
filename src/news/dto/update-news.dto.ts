@@ -1,6 +1,6 @@
 import { IsString, ValidateIf } from 'class-validator';
 
-export class UpdatedNews {
+export class UpdateNewsDto {
   @ValidateIf(o => o.title)
   @IsString()
   public title?: string;

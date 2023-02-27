@@ -1,11 +1,6 @@
-import { Comment } from '../../comments/dto/create-comment.dto';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export class News {
-  @IsOptional()
-  @IsNumber()
-  public id?: number;
-
+export class CreateNewsDto {
   @IsNotEmpty()
   @IsString()
   public title: string;
@@ -16,11 +11,13 @@ export class News {
 
   @IsNotEmpty()
   @IsString()
-  public author: string;
+  public userId: string;
 
-  public comments: Comment[];
+  @IsNotEmpty()
+  @IsString()
+  public categoryId: string;
 
   @IsOptional()
   @IsString()
-  public image?: string;
+  public image: string;
 }

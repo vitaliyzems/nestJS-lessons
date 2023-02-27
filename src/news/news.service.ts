@@ -1,48 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { getRandomInt } from 'src/utils/getRandomInt';
-import { News } from './dto/create-news.dto';
-import { UpdatedNews } from './dto/update-news.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, UpdateResult } from 'typeorm';
+import { UpdateNewsDto } from './dto/update-news.dto';
+import { News } from './entities/news.entity';
 
 @Injectable()
 export class NewsService {
-  private readonly news: News[] = [];
+  constructor(@InjectRepository(News) private newsRepository: Repository<News>) { }
 
-  getNews(): News[] {
-    return this.news;
+  async create(news: News): Promise<News> {
+    return await this.newsRepository.save(news);
   }
 
-  findOne(id: number): News | null {
-    const news = this.news.find(news => news.id === id);
-    return news;
+  async getAllNews(): Promise<News[]> {
+    return await this.newsRepository.find();
   }
 
-  create(news: News): News {
-    const id = getRandomInt(1, 100000);
-    const finalNews = { id, ...news };
-    this.news.unshift(finalNews);
-    return finalNews;
+  async getAllNewsByUser(userId: number): Promise<News[]> {
+    return await this.newsRepository.findBy({ 'user': { id: userId } });
   }
 
-  update(id: number, updatedNews: UpdatedNews): News | string {
-    const news = this.news.find(news => news.id === id);
-    if (!news) {
-      return 'Новости с таким идентификатором не найдено';
-    }
-    const idx = this.news.indexOf(news);
-    const finalNews = {
-      ...news,
-      ...updatedNews
-    };
-    this.news[idx] = finalNews;
-    return finalNews;
+  async getOneById(id: number): Promise<News> {
+    return await this.newsRepository.findOne({ where: { id }, relations: { 'user': true } });
   }
 
-  remove(id: number): News[] | string {
-    const news = this.news.find(news => news.id === id);
-    if (!news) {
-      return 'Новости с таким идентификатором не найдено';
-    }
-    const idx = this.news.indexOf(news);
-    return this.news.splice(idx, 1);
+  async update(id: number, updateNewsDto: UpdateNewsDto): Promise<UpdateResult> {
+    return await this.newsRepository.update(id, updateNewsDto);
+  }
+
+  async remove(news: News): Promise<News> {
+    return await this.newsRepository.remove(news);
   }
 }
