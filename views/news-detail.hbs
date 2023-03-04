@@ -1,0 +1,17 @@
+{{#if detailNews}}
+<div class="row">
+  <a href="http://localhost:3000/news/views/all" style="display: flex; height: 40px; align-items: center;">Назад к списку новостей</a>
+  <div class="card mt-2 mb-4">
+    <img src="http://localhost:3000{{detailNews.image}}" class="card-img-top mt-2" style="height: 200px; object-fir: cover;" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">{{detailNews.title}}</h5>
+      <h6 class="card-subtitle mb-2 text-muted">Автор: {{detailNews.author}}</h6>
+      <p class="card-text">{{detailNews.description}}</p>
+    </div>
+  </div>
+</div>
+<a href="http://localhost:3000/comments/views/create/{{detailNews.id}}" style="display: block; margin-bottom: 20px;">Добавить комментарий</a>
+{{> comments}}
+{{else}}
+<h1>Новость не найдена</h1>
+{{/if}}
