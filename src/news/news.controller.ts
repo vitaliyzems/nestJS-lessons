@@ -49,11 +49,11 @@ export class NewsController {
     return await this.newsService.getOneById(Number(id));
   }
 
-  // @Get('views/create')
-  // @Render('news-create')
-  // getCreateView() {
-  //   return {};
-  // }
+  @Get('views/create')
+  @Render('news-create')
+  getCreateView() {
+    return {};
+  }
 
   @Get('views/:id')
   @Render('news-detail')
@@ -96,7 +96,7 @@ export class NewsController {
     news.cover = imagePath;
     news.user = _user;
     news.category = _category;
-    await this.mailService.sendNewNewsForAdmins(['zemc96@icloud.com'], news);
+    // await this.mailService.sendNewNewsForAdmins(['zemc96@icloud.com'], news);
     return this.newsService.create(news);
   }
 
