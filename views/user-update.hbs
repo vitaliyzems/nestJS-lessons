@@ -1,0 +1,45 @@
+<h1>Редактирование профиля</h1>
+<h4>Здравствуйте {{user.firstName}} | {{user.email}}</h4>
+<form class="mb-4">
+  <div class="mb-3">
+    <label for="nameInput" class="form-label">Имя</label>
+    <input type="text" class="form-control" name="firstName" id="nameInput">
+  </div>
+  <div class="mb-3">
+    <label for="passwordInput" class="form-label">Текущий пароль</label>
+    <input type="text" class="form-control" name="password" id="passwordInput">
+  </div>
+  <div class="mb-3">
+    <label for="newPasswordInput" class="form-label">Новый пароль</label>
+    <input type="text" class="form-control" name="newPassword" id="newPasswordInput">
+  </div>
+  <input type="submit" class="btn btn-primary" value="Сохранить">
+</form>
+<script>
+  const formEl = document.querySelector('form');
+  formEl.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const data = {
+      firstName: formEl.nameInput.value,
+      password: formEl.passwordInput.value,
+      newPassword: formEl.newPasswordInput.value
+    };
+    const url = new URL(document.location.href);
+    const userId = url.pathname.split('/').pop();
+
+    const response = await fetch(`/user/${userId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwiZmlyc3ROYW1lIjoiQmFsYXBhbiIsImVtYWlsIjoiYWFhQG1haWwucnUiLCJyb2xlIjoidXNlciIsImNyZWF0ZWRBdCI6IjIwMjMtMDMtMDJUMTQ6NDI6NTYuNjkwWiIsInVwZGF0ZWRBdCI6IjIwMjMtMDMtMDNUMTc6MjE6NTguNzM2WiIsImlhdCI6MTY3NzkxMTk5NywiZXhwIjoxNjc3OTE1NTk3fQ.fRCIzxqZ6QJYPXLnrauXmaPW35mUWuViaGZL-P7vei8'
+      },
+      body: JSON.stringify(data),
+    })
+    const result = await response.text();
+    if (response.status === 201) {
+      window.location = 'http://localhost:3000/news/views/all';
+      return;
+    }
+    alert(result);
+  })
+</script>
