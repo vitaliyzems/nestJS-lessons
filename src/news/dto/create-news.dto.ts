@@ -11,10 +11,6 @@ export class CreateNewsDto {
 
   @IsNotEmpty()
   @IsString()
-  public userId: string;
-
-  @IsNotEmpty()
-  @IsString()
   public categoryId: string;
 
   @IsOptional()

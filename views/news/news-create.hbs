@@ -9,8 +9,11 @@
     <textarea type="text" class="form-control" name="description" id="descriptionInput" rows="3"></textarea>
   </div>
   <div class="mb-3">
-    <label for="authorInput" class="form-label">Автор *</label>
-    <input type="text" class="form-control" name="author" id="authorInput">
+    <label for="categoryInput" class="form-label">Категория</label>
+    <select name="categoryId" id="categoryInput">
+      <option value="1">Popular</option>
+      <option value="2">Some category</option>
+    </select>
   </div>
   <div class="form-group">
     <label for="image">Обложка новости</label>
@@ -23,6 +26,9 @@
   formEl.addEventListener('submit', async (event) => {
     event.preventDefault();
     const data = new FormData(formEl);
+    for(const [name, value] of data) {
+      console.log(`${name} : ${value}`)
+    }
     const response = await fetch('/news', {
       method: 'POST',
       body: data

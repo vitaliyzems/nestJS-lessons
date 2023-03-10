@@ -12,8 +12,4 @@ export class CreateCommentDto {
   @IsNotEmpty()
   @IsString()
   newsId: string;
-
-  @IsOptional()
-  @IsString()
-  public avatar: string;
 }

@@ -1,0 +1,23 @@
+{{#if detailNews}}
+<a href="all" style="display: block; margin-top: 10px; font-size: 18px;">Назад к списку новостей</a>
+<div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+<div class="col-10 col-sm-8 col-lg-6">
+<img src="{{detailNews.cover}}" class="d-block mx-lg-auto img-fluid" alt="{{detailNews.title}}" width="700" height="500" loading="lazy">
+</div>
+<div class="col-lg-6">
+<h1 class="display-5 fw-bold lh-1 mb-3">{{detailNews.title}}</h1>
+<div class="text-muted">Дата создания: {{detailNews.createdAt}}</div>
+<div class="text-muted">
+Автор: {{detailNews.user.firstName}}
+</div>
+<p class="lead">{{detailNews.description}}</p>
+</div>
+</div>
+{{else}}
+<h1>Новость не найдена!</h1>
+{{/if}}
+
+<h2 class="fw-bold lh-1 mb-3">Комментарии</h2>
+<div id="app">
+</div>
+<script src="/js/comments.js" type="text/babel"></script>

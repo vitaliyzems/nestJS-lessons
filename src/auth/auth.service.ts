@@ -23,13 +23,17 @@ export class AuthService {
   }
 
   async login(user: Omit<User, 'password'>) {
-    console.log(user);
     return {
+      id: user.id,
       access_token: this.jwtService.sign(user)
     };
   }
 
   async verify(token: string) {
     return this.jwtService.verify(token);
+  }
+
+  async decode(token: string) {
+    return this.jwtService.decode(token);
   }
 }

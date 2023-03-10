@@ -10,9 +10,6 @@ export class Comment {
   @Column('text')
   message: string;
 
-  @Column('text', { nullable: true })
-  avatar: string;
-
   @ManyToOne(() => User, user => user.comments)
   author: User;
 

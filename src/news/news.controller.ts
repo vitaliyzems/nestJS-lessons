@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Patch, UseInterceptors, UploadedFiles, Render, HttpException, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Patch, UseInterceptors, UploadedFiles, Render, HttpException, HttpStatus, UseGuards, Req } from '@nestjs/common';
 import { NewsService } from './news.service';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { UpdateNewsDto } from './dto/update-news.dto';
@@ -12,6 +12,8 @@ import { UserService } from 'src/user/user.service';
 import { CategoryService } from 'src/category/category.service';
 import { CommentService } from 'src/comment/comment.service';
 import { Comment } from 'src/comment/entities/comment.entity';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Request } from 'express';
 
 const NEWS_PATH = '/static/';
 const helperFileLoader = new HelperFileLoader();
@@ -34,7 +36,7 @@ export class NewsController {
   }
 
   @Get('views/all')
-  @Render('news-list')
+  @Render('news/news-list')
   async getViewAll(): Promise<{ news: News[]; }> {
     return { news: await this.getAllNews() };
   }
@@ -50,13 +52,13 @@ export class NewsController {
   }
 
   @Get('views/create')
-  @Render('news-create')
+  @Render('news/news-create')
   getCreateView() {
     return {};
   }
 
   @Get('views/:id')
-  @Render('news-detail')
+  @Render('news/news-detail')
   async getDetailView(@Param('id') id: string): Promise<{ detailNews: News, comments: Comment[]; }> {
     const _news = await this.newsService.getOneById(Number(id));
     const _comments = await this.commentService.findAllCommentsForOneNews(Number(id));
@@ -64,6 +66,7 @@ export class NewsController {
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FilesInterceptor('cover', 1, {
       storage: diskStorage({
@@ -71,15 +74,20 @@ export class NewsController {
         filename: helperFileLoader.customFileName
       })
     }))
-  async create(@Body() createNewsDto: CreateNewsDto, @UploadedFiles() image: Express.Multer.File[]): Promise<News> {
-    const _user = await this.userService.findOne(Number(createNewsDto.userId));
+  async create(
+    @Body() dto: CreateNewsDto,
+    @Req() req: Request,
+    @UploadedFiles() image: Express.Multer.File[]) {
+    const _user = await this.userService.findOne(req.cookies.id);
+
     if (!_user) {
       throw new HttpException(
         'Такого пользователя не существует',
         HttpStatus.BAD_REQUEST
       );
     }
-    const _category = await this.categoryService.findOneById(Number(createNewsDto.categoryId));
+
+    const _category = await this.categoryService.findOneById(Number(dto.categoryId));
     if (!_category) {
       throw new HttpException(
         'Такой категории не существует',
@@ -91,8 +99,8 @@ export class NewsController {
       imagePath = NEWS_PATH + image[0].filename;
     }
     const news = new News();
-    news.title = createNewsDto.title;
-    news.description = createNewsDto.description;
+    news.title = dto.title;
+    news.description = dto.description;
     news.cover = imagePath;
     news.user = _user;
     news.category = _category;
