@@ -1,0 +1,43 @@
+<h1>Создание новости</h1>
+<form class="mb-4">
+  <div class="mb-3">
+    <label for="titleInput" class="form-label">Заголовок *</label>
+    <input type="text" class="form-control" name="title" id="titleInput">
+  </div>
+  <div class="mb-3">
+    <label for="descriptionInput" class="form-label">Описание *</label>
+    <textarea type="text" class="form-control" name="description" id="descriptionInput" rows="3"></textarea>
+  </div>
+  <div class="mb-3">
+    <label for="categoryInput" class="form-label">Категория</label>
+    <select name="categoryId" id="categoryInput">
+      <option value="1">Popular</option>
+      <option value="2">Some category</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="image">Обложка новости</label>
+    <input class="form-control-file" type="file" name="cover" id="cover">
+  </div>
+  <input type="submit" class="btn btn-primary" value="Создать">
+</form>
+<script>
+  const formEl = document.querySelector('form');
+  formEl.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const data = new FormData(formEl);
+    for(const [name, value] of data) {
+      console.log(`${name} : ${value}`)
+    }
+    const response = await fetch('/news', {
+      method: 'POST',
+      body: data
+    })
+    const result = await response.text();
+    if (response.status === 201) {
+      window.location = 'http://localhost:3000/news/views/all';
+      return;
+    }
+    alert(result);
+  })
+</script>
